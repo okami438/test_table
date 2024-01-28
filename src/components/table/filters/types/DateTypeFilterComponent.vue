@@ -11,8 +11,8 @@ const modelValue = ref();
 
 <template>
   <div class="filter">
-    <label> {{ filter.label }} </label>
-    <input :id="filter.id" type="text" v-model="modelValue">
+    <label class="filter__label"> {{ filter.label }} </label>
+    <input class="filter__label" :id="filter.id" type="date" v-model="modelValue">
   </div>
 </template>
 

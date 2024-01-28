@@ -5,9 +5,9 @@ import Table from "@/ui/Table.vue";
 
 <template>
 <Table>
-  <template #header>
-    <div>Тут фильтры</div>
-  </template>
+<!--  <template #header>-->
+<!--    <div>Тут фильтры</div>-->
+<!--  </template>-->
 </Table>
 </template>
 

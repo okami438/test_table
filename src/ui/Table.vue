@@ -4,6 +4,7 @@ import {codeDataSerialization, dateDataSerialization, defaultDataSerialization} 
 import ArrowDownIcon from '@/assets/icons/table/arrow_down.svg';
 import ArrowUpIcon from '@/assets/icons/table/arrow_up.svg';
 import ArrowsSortIcon from '@/assets/icons/table/arrows_sort.svg';
+import FilterSelectComponent from "@/components/table/filters/FilterSelectComponent.vue";
 
 const tableData = [
   {
@@ -37,14 +38,26 @@ const tableColumns = [
   {key: 'name', label: 'Наименование', sorting: false, format: defaultDataSerialization},
   {key: 'description', label: 'Описание', sorting: false, format: defaultDataSerialization},
   {key: 'date', label: 'Дата', sorting: true, format: dateDataSerialization},
+];
+
+const tableFilters = [
+  { key: 'id', label: 'Код', type: 'input' },
+  { key: 'name', label: 'Наименование', type: 'input' },
+  { key: 'description', label: 'Описание', type: 'input' },
+  { key: 'date', label: 'Дата', type: 'date' },
 ]
 
 </script>
 <template>
   <div class="table-container">
-    <div class="table-header">
-      <h3>Заголовок таблицы</h3>
-      <slot name="header" />
+    <div class="table-container__header">
+      <div class="table-container__header-text">
+        <h3>Заголовок таблицы</h3>
+      </div>
+      <div class="table-container__header-filters">
+        <FilterSelectComponent v-for="filter in tableFilters" :filter="filter"/>
+      </div>
+<!--      <slot name="header" />-->
     </div>
     <table>
       <thead>
@@ -78,6 +91,27 @@ const tableColumns = [
   padding: 0.5rem 1.5rem;
   border: 1px solid #dddddd;
   border-radius: 12px;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: .3rem;
+
+    &-text {
+      color: red;
+    }
+
+    &-filters {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      position: relative;
+      gap: 1rem;
+      padding: 1rem;
+    }
+  }
+
 }
 
 table {
