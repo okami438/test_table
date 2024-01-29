@@ -2,15 +2,46 @@
 
 import InputTypeFilterComponent from "@/components/table/filters/types/InputTypeFilterComponent.vue";
 import DateTypeFilterComponent from "@/components/table/filters/types/DateTypeFilterComponent.vue";
+import {onMounted, ref} from "vue";
 
-const props = defineProps(['filter'])
+const props = defineProps(['tableFilters']);
+const emit = defineEmits(['filtering'])
+
+const filtersData = ref({});
+
+const initFiltersData = () => {
+  filtersData.value = props.tableFilters.reduce((acc, current) => {
+    const filterDataItem = {
+      [current.key]: current.defaultValue || null
+    }
+    return {...acc, ...filterDataItem}
+  }, {})
+}
+
+onMounted(() => {
+  initFiltersData();
+})
 
 </script>
 
 <template>
-  <div class="filter_container">
-    <InputTypeFilterComponent v-if="filter.type === 'input'" :filter="filter"/>
-    <DateTypeFilterComponent v-if="filter.type === 'date'" :filter="filter"/>
+  <div class="filter_container" v-for="filter in tableFilters">
+    <InputTypeFilterComponent
+        v-if="filter.type === 'input'"
+        :filter="filter"
+        :model-value="filtersData[filter.key]"
+        @update:model-value="event => filtersData[filter.key] = event.target.value"
+    />
+    <DateTypeFilterComponent
+        v-if="filter.type === 'date'"
+        :filter="filter"
+        :model-value="filtersData[filter.key]"
+        @update:model-value="event => filtersData[filter.key] = event.target.value"
+    />
+  </div>
+  <div class="button-group">
+    <button @click="emit('filtering', filtersData)">Отфильтровать</button>
+    <button>Сбросить</button>
   </div>
 </template>
 

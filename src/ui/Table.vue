@@ -5,6 +5,8 @@ import ArrowDownIcon from '@/assets/icons/table/arrow_down.svg';
 import ArrowUpIcon from '@/assets/icons/table/arrow_up.svg';
 import ArrowsSortIcon from '@/assets/icons/table/arrows_sort.svg';
 import FilterSelectComponent from "@/components/table/filters/FilterSelectComponent.vue";
+import {filterComposable} from "@/components/table/entities/filterComposable.js";
+import {ref} from "vue";
 
 const tableData = [
   {
@@ -20,7 +22,7 @@ const tableData = [
     "date": "2023-11-29T21:26:32.000000Z"
   },
   {
-    "id": 3,
+    "id": "3",
     "name": "Test three",
     "description": "consectetur adipiscing elit",
     "date": "2023-11-29T21:26:32.000000Z"
@@ -31,7 +33,9 @@ const tableData = [
     "description": "Suspendisse et est eget",
     "date": "2023-11-29T21:26:32.000000Z"
   }
-];
+]
+
+const filteredTableData = ref(tableData);
 
 const tableColumns = [
   {key: 'id', label: 'Код', sorting: true, format: codeDataSerialization},
@@ -41,11 +45,14 @@ const tableColumns = [
 ];
 
 const tableFilters = [
-  { key: 'id', label: 'Код', type: 'input' },
+  { key: 'id', label: 'Код', type: 'input', defaultValue: '2' },
   { key: 'name', label: 'Наименование', type: 'input' },
   { key: 'description', label: 'Описание', type: 'input' },
   { key: 'date', label: 'Дата', type: 'date' },
-]
+];
+
+
+const { onClickFilteringData } = filterComposable(tableData, filteredTableData);
 
 </script>
 <template>
@@ -55,7 +62,7 @@ const tableFilters = [
         <h3>Заголовок таблицы</h3>
       </div>
       <div class="table-container__header-filters">
-        <FilterSelectComponent v-for="filter in tableFilters" :filter="filter"/>
+        <FilterSelectComponent @filtering="(filters) => onClickFilteringData(filters)" :table-filters="tableFilters" />
       </div>
 <!--      <slot name="header" />-->
     </div>
@@ -74,7 +81,7 @@ const tableFilters = [
       </tr>
       </thead>
       <tbody>
-      <tr v-for="dataItem in tableData" :key="dataItem.id">
+      <tr v-for="dataItem in filteredTableData" :key="dataItem.id">
         <td v-for="column in tableColumns">
           <component :is="column.format(dataItem[column.key])"/>
         </td>

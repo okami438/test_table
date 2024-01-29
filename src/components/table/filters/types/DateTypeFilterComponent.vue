@@ -1,10 +1,7 @@
 <script setup>
 
-import { ref } from "vue";
-
-const props = defineProps(['filter'])
-
-const modelValue = ref();
+const props = defineProps(['filter', 'modelValue']);
+const emit = defineEmits(['update:modelValue'])
 
 
 </script>
@@ -12,7 +9,7 @@ const modelValue = ref();
 <template>
   <div class="filter">
     <label class="filter__label"> {{ filter.label }} </label>
-    <input class="filter__label" :id="filter.id" type="date" v-model="modelValue">
+    <input :id="filter.id" type="text" :value="modelValue" @input="event => emit('update:modelValue', event)">
   </div>
 </template>
 
