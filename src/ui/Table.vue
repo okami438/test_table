@@ -6,7 +6,7 @@ import ArrowUpIcon from '@/assets/icons/table/arrow_up.svg';
 import ArrowsSortIcon from '@/assets/icons/table/arrows_sort.svg';
 import FilterSelectComponent from "@/components/table/filters/FilterSelectComponent.vue";
 import {filterComposable} from "@/components/table/entities/filterComposable.js";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 
 const tableData = [
   {
@@ -22,7 +22,7 @@ const tableData = [
     "date": "2023-11-29T21:26:32.000000Z"
   },
   {
-    "id": "3",
+    "id": 3,
     "name": "Test three",
     "description": "consectetur adipiscing elit",
     "date": "2023-11-29T21:26:32.000000Z"
@@ -31,7 +31,7 @@ const tableData = [
     "id": 4,
     "name": "Test four",
     "description": "Suspendisse et est eget",
-    "date": "2023-11-29T21:26:32.000000Z"
+    "date": "2023-11-30T21:26:32.000000Z"
   }
 ]
 
@@ -45,14 +45,29 @@ const tableColumns = [
 ];
 
 const tableFilters = [
-  { key: 'id', label: 'Код', type: 'input', defaultValue: '2' },
+  { key: 'id', label: 'Код', type: 'input' },
   { key: 'name', label: 'Наименование', type: 'input' },
   { key: 'description', label: 'Описание', type: 'input' },
   { key: 'date', label: 'Дата', type: 'date' },
 ];
 
+const sort = (column, order) => {
+  if (column && column.key) {
+    filteredTableData.value = filteredTableData.value.sort((a, b) => {
+      if (order === 'ascending') {
+        return a[column.key] - b[column.key];
+      } else {
+        return b[column.key] - a[column.key];
+      }
+    });
+  }
+}
 
-const { onClickFilteringData } = filterComposable(tableData, filteredTableData);
+
+
+  const {onClickFilteringData, onClickUnFilteringData} = filterComposable(tableData, filteredTableData);
+
+
 
 </script>
 <template>
@@ -62,17 +77,18 @@ const { onClickFilteringData } = filterComposable(tableData, filteredTableData);
         <h3>Заголовок таблицы</h3>
       </div>
       <div class="table-container__header-filters">
-        <FilterSelectComponent @filtering="(filters) => onClickFilteringData(filters)" :table-filters="tableFilters" />
+        <FilterSelectComponent @filtering="(filters) => onClickFilteringData(filters)" @reset="onClickUnFilteringData" :table-filters="tableFilters" />
       </div>
 <!--      <slot name="header" />-->
     </div>
     <table>
       <thead>
       <tr>
-        <th v-for="column in tableColumns">
+        <th v-for="column in tableColumns" :key="column.key">
           <div>
             <span>{{ column.label }}</span>
-            <span class="sort" v-if="column.sorting"><ArrowsSortIcon/></span>
+            <span class="sort" v-if="column.sorting" @click="sort(column, 'ascending')"><ArrowsSortIcon/></span>
+            <span class="sort" v-if="column.sorting" @click="sort(column, 'desc')"><ArrowDownIcon/></span>
 
           </div>
 

@@ -5,7 +5,7 @@ import DateTypeFilterComponent from "@/components/table/filters/types/DateTypeFi
 import {onMounted, ref} from "vue";
 
 const props = defineProps(['tableFilters']);
-const emit = defineEmits(['filtering'])
+const emit = defineEmits(['filtering', 'reset'])
 
 const filtersData = ref({});
 
@@ -39,13 +39,22 @@ onMounted(() => {
         @update:model-value="event => filtersData[filter.key] = event.target.value"
     />
   </div>
+
   <div class="button-group">
     <button @click="emit('filtering', filtersData)">Отфильтровать</button>
-    <button>Сбросить</button>
+    <button @click="emit('reset')">Сбросить</button>
   </div>
+
 </template>
 
 <style scoped>
+
+
+.button-group {
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+  }
 
 
 </style>
