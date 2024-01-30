@@ -1,9 +1,10 @@
 <script setup>
-import TableComponent from "@/components/table/TableComponent.vue";
 </script>
 
 <template>
-  <TableComponent />
+  <div>
+    <router-view />
+  </div>
 </template>
 
 <style scoped>

@@ -1,114 +1,68 @@
 <script setup>
+import TableSortButton from "@/components/table/entities/TableSortButton.vue";
 
-import {codeDataSerialization, dateDataSerialization, defaultDataSerialization} from "@/utils/dataSerialization";
-import ArrowDownIcon from '@/assets/icons/table/arrow_down.svg';
-import ArrowUpIcon from '@/assets/icons/table/arrow_up.svg';
-import ArrowsSortIcon from '@/assets/icons/table/arrows_sort.svg';
-import FilterSelectComponent from "@/components/table/filters/FilterSelectComponent.vue";
-import {filterComposable} from "@/components/table/entities/filterComposable.js";
-import {onMounted, ref} from "vue";
-
-const tableData = [
-  {
-    "id": 1,
-    "name": "Test one",
-    "description": "Lorem ispum",
-    "date": "2023-11-29T21:26:32.000000Z"
-  },
-  {
-    "id": 2,
-    "name": "Test two",
-    "description": "dolor sit amet",
-    "date": "2023-11-29T21:26:32.000000Z"
-  },
-  {
-    "id": 3,
-    "name": "Test three",
-    "description": "consectetur adipiscing elit",
-    "date": "2023-11-29T21:26:32.000000Z"
-  },
-  {
-    "id": 4,
-    "name": "Test four",
-    "description": "Suspendisse et est eget",
-    "date": "2023-11-30T21:26:32.000000Z"
-  }
-]
-
-const filteredTableData = ref(tableData);
-
-const tableColumns = [
-  {key: 'id', label: 'Код', sorting: true, format: codeDataSerialization},
-  {key: 'name', label: 'Наименование', sorting: false, format: defaultDataSerialization},
-  {key: 'description', label: 'Описание', sorting: false, format: defaultDataSerialization},
-  {key: 'date', label: 'Дата', sorting: true, format: dateDataSerialization},
-];
-
-const tableFilters = [
-  { key: 'id', label: 'Код', type: 'input' },
-  { key: 'name', label: 'Наименование', type: 'input' },
-  { key: 'description', label: 'Описание', type: 'input' },
-  { key: 'date', label: 'Дата', type: 'date' },
-];
-
-const sort = (column, order) => {
-  if (column && column.key) {
-    filteredTableData.value = filteredTableData.value.sort((a, b) => {
-      if (order === 'ascending') {
-        return a[column.key] - b[column.key];
-      } else {
-        return b[column.key] - a[column.key];
-      }
-    });
-  }
-}
-
-
-
-  const {onClickFilteringData, onClickUnFilteringData} = filterComposable(tableData, filteredTableData);
-
-
+const props = defineProps(['columnsConfig', 'filtersConfig', 'activeColumnKey', 'data', 'isLoading', 'title']);
+const emit = defineEmits(['sort', 'change:activeColumnKey']);
 
 </script>
 <template>
   <div class="table-container">
     <div class="table-container__header">
-      <div class="table-container__header-text">
-        <h3>Заголовок таблицы</h3>
-      </div>
-      <div class="table-container__header-filters">
-        <FilterSelectComponent @filtering="(filters) => onClickFilteringData(filters)" @reset="onClickUnFilteringData" :table-filters="tableFilters" />
-      </div>
-<!--      <slot name="header" />-->
+      <h3>{{ title }}</h3>
+      <slot name="header" />
     </div>
     <table>
+
       <thead>
       <tr>
-        <th v-for="column in tableColumns" :key="column.key">
+        <th v-for="column in columnsConfig" :key="column.key">
           <div>
             <span>{{ column.label }}</span>
-            <span class="sort" v-if="column.sorting" @click="sort(column, 'ascending')"><ArrowsSortIcon/></span>
-            <span class="sort" v-if="column.sorting" @click="sort(column, 'desc')"><ArrowDownIcon/></span>
-
+            <TableSortButton
+                v-if="column.sorting"
+                :active-column-key="activeColumnKey"
+                :column="column"
+                @change:active-column-key="(key) => emit('change:activeColumnKey', key)"
+                @sort="(state) => emit('sort', state)"
+            />
           </div>
-
         </th>
-
       </tr>
       </thead>
+
       <tbody>
-      <tr v-for="dataItem in filteredTableData" :key="dataItem.id">
-        <td v-for="column in tableColumns">
-          <component :is="column.format(dataItem[column.key])"/>
+      <tr v-for="dataItem in data" :key="dataItem.id">
+        <td v-for="column in columnsConfig">
+          <span :class="`loading-${dataItem}`" v-if="isLoading" />
+          <component v-if="!isLoading" :is="column.format(dataItem[column.key])"/>
         </td>
       </tr>
       </tbody>
+
     </table>
   </div>
 
 </template>
 
 <style lang="scss" scoped>
+
+@for $i from 1 through 8 {
+  .loading-#{$i} {
+    display: block;
+    border-radius: 12px;
+    width: random(300) + px;
+    height: 18px;
+    background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
+    background-size: 500px 100px;
+    animation-name: moving-gradient;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+}
+
+
 
 .table-container {
   padding: 0.5rem 1.5rem;
@@ -121,17 +75,8 @@ const sort = (column, order) => {
     position: relative;
     gap: .3rem;
 
-    &-text {
-      color: red;
-    }
-
-    &-filters {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-      position: relative;
-      gap: 1rem;
-      padding: 1rem;
+    h3 {
+      color: cornflowerblue;
     }
   }
 

@@ -9,7 +9,7 @@ const emit = defineEmits(['update:modelValue'])
 <template>
   <div class="filter">
     <label class="filter__label"> {{ filter.label }} </label>
-    <input :id="filter.id" type="text" :value="modelValue" @input="event => emit('update:modelValue', event)">
+    <input :id="filter.id" type="date" :value="modelValue" @input="event => emit('update:modelValue', event)">
   </div>
 </template>
 

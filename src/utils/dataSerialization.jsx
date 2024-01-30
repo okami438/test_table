@@ -5,7 +5,7 @@ export function defaultDataSerialization(value)  {
 }
 
 export function codeDataSerialization(value)  {
-    return () => <div style="color: #0000FF">{ value }</div>
+    return () => <div style="color: cornflowerblue">{ value }</div>
 }
 
 export function dateDataSerialization(value)  {

@@ -18,6 +18,12 @@ const initFiltersData = () => {
   }, {})
 }
 
+const onResetFiltersData = () => {
+  emit('reset');
+  initFiltersData();
+
+}
+
 onMounted(() => {
   initFiltersData();
 })
@@ -25,29 +31,41 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="filter_container" v-for="filter in tableFilters">
-    <InputTypeFilterComponent
-        v-if="filter.type === 'input'"
-        :filter="filter"
-        :model-value="filtersData[filter.key]"
-        @update:model-value="event => filtersData[filter.key] = event.target.value"
-    />
-    <DateTypeFilterComponent
-        v-if="filter.type === 'date'"
-        :filter="filter"
-        :model-value="filtersData[filter.key]"
-        @update:model-value="event => filtersData[filter.key] = event.target.value"
-    />
+  <div class="filters">
+    <div class="filter-group" v-for="filter in tableFilters">
+      <InputTypeFilterComponent
+          v-if="filter.type === 'input'"
+          :filter="filter"
+          :model-value="filtersData[filter.key]"
+          @update:model-value="event => filtersData[filter.key] = event.target.value.trim()"
+      />
+      <DateTypeFilterComponent
+          v-if="filter.type === 'date'"
+          :filter="filter"
+          :model-value="filtersData[filter.key]"
+          @update:model-value="event => filtersData[filter.key] = event.target.value"
+      />
+    </div>
+
+    <div class="button-group">
+      <button @click="emit('filtering', filtersData)">Отфильтровать</button>
+      <button @click="onResetFiltersData">Сбросить</button>
+    </div>
   </div>
 
-  <div class="button-group">
-    <button @click="emit('filtering', filtersData)">Отфильтровать</button>
-    <button @click="emit('reset')">Сбросить</button>
-  </div>
 
 </template>
 
 <style scoped>
+
+.filters {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  position: relative;
+  gap: 1rem;
+  padding: 1rem;
+}
 
 
 .button-group {
